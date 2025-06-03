@@ -13,7 +13,10 @@
 
     <!-- Group Type Tabs -->
     <div class="flex space-x-4 border-b border-gray-200 dark:border-gray-700">
-        <button onclick="showGroupType('broadcast')" class="px-4 py-2 text-sm font-medium text-gray-900 dark:text-white border-b-2 border-indigo-600">
+        <button onclick="showGroupType('all')" class="px-4 py-2 text-sm font-medium text-gray-900 dark:text-white border-b-2 border-indigo-600">
+            All Groups
+        </button>
+        <button onclick="showGroupType('broadcast')" class="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
             Broadcast Groups
         </button>
         <button onclick="showGroupType('user_chat')" class="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
@@ -237,6 +240,7 @@
     const groupChatData = {
         'Broadcast Channel': {
             name: 'Broadcast Channel',
+            type: 'broadcast',
             members: 1500,
             messages: [
                 { sender: 'admin', text: 'Welcome to the broadcast channel!', time: '10:00 AM' },
@@ -246,6 +250,7 @@
         },
         'User Support': {
             name: 'User Support',
+            type: 'user_chat',
             members: 800,
             messages: [
                 { sender: 'admin', text: 'How can we help you today?', time: '9:30 AM' },
@@ -254,6 +259,7 @@
         },
         'Community Chat': {
             name: 'Community Chat',
+            type: 'customer_service',
             members: 1200,
             messages: [
                 { sender: 'admin', text: 'Welcome to the community!', time: '11:00 AM' },
@@ -366,9 +372,35 @@
 
     // Group Type Tabs
     function showGroupType(type) {
-        // Implementation for filtering groups by type
-        console.log('Showing groups of type:', type);
+        // Update active tab styling
+        const tabs = document.querySelectorAll('.border-b button');
+        tabs.forEach(tab => {
+            if (tab.textContent.toLowerCase().includes(type)) {
+                tab.classList.remove('text-gray-500', 'dark:text-gray-400');
+                tab.classList.add('text-gray-900', 'dark:text-white', 'border-b-2', 'border-indigo-600');
+            } else {
+                tab.classList.remove('text-gray-900', 'dark:text-white', 'border-b-2', 'border-indigo-600');
+                tab.classList.add('text-gray-500', 'dark:text-gray-400');
+            }
+        });
+
+        // Filter groups based on type
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const groupName = row.querySelector('.text-sm.font-medium').textContent;
+            const group = groupChatData[groupName];
+            if (type === 'all' || group.type === type) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     }
+
+    // Show all groups by default when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        showGroupType('all');
+    });
 
     // Edit and Delete Group Functions
     function editGroup(groupId) {
