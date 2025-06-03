@@ -4,7 +4,10 @@ import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
+# Use environment variable for secret key in production
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24))
+# Disable debug mode in production
+app.config['DEBUG'] = os.environ.get('FLASK_ENV') == 'development'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -119,4 +122,7 @@ def logs():
     return render_template('logs.html')
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    # Get port from environment variable or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Bind to 0.0.0.0 to make the server externally visible
+    app.run(host='0.0.0.0', port=port) 
