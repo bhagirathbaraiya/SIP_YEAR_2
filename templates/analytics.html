@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header with Date Range -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
+        <div class="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg shadow p-2">
+            <button class="px-3 py-1.5 text-sm font-medium rounded-md bg-indigo-600 text-white">7D</button>
+            <button class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">30D</button>
+            <button class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">90D</button>
+            <button class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Custom</button>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Messages -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Messages</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">15,234</h3>
+                </div>
+                <div class="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                    <i class="ri-message-2-line text-xl text-indigo-600 dark:text-indigo-400"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 dark:text-green-400 flex items-center">
+                    <i class="ri-arrow-up-line mr-1"></i>
+                    12.5%
+                </span>
+                <span class="text-gray-500 dark:text-gray-400 ml-2">from last period</span>
+            </div>
+        </div>
+
+        <!-- Active Users -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">2,456</h3>
+                </div>
+                <div class="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                    <i class="ri-user-line text-xl text-green-600 dark:text-green-400"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 dark:text-green-400 flex items-center">
+                    <i class="ri-arrow-up-line mr-1"></i>
+                    8.3%
+                </span>
+                <span class="text-gray-500 dark:text-gray-400 ml-2">from last period</span>
+            </div>
+        </div>
+
+        <!-- Response Time -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Response Time</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">2.5m</h3>
+                </div>
+                <div class="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                    <i class="ri-time-line text-xl text-red-600 dark:text-red-400"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-red-600 dark:text-red-400 flex items-center">
+                    <i class="ri-arrow-down-line mr-1"></i>
+                    0.5m
+                </span>
+                <span class="text-gray-500 dark:text-gray-400 ml-2">from last period</span>
+            </div>
+        </div>
+
+        <!-- User Satisfaction -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">User Satisfaction</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">4.8/5</h3>
+                </div>
+                <div class="h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
+                    <i class="ri-star-line text-xl text-yellow-600 dark:text-yellow-400"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 dark:text-green-400 flex items-center">
+                    <i class="ri-arrow-up-line mr-1"></i>
+                    0.2
+                </span>
+                <span class="text-gray-500 dark:text-gray-400 ml-2">from last period</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Message Activity -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Message Activity</h3>
+                <div class="flex items-center gap-2">
+                    <button class="px-2 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white">Daily</button>
+                    <button class="px-2 py-1 text-xs font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Weekly</button>
+                    <button class="px-2 py-1 text-xs font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Monthly</button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="messageActivityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- User Distribution -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Distribution</h3>
+                <div class="flex items-center gap-2">
+                    <button class="px-2 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white">By Type</button>
+                    <button class="px-2 py-1 text-xs font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">By Region</button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="userDistributionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Group Performance -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Group Performance</h3>
+                <div class="flex items-center gap-2">
+                    <button class="px-2 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white">Messages</button>
+                    <button class="px-2 py-1 text-xs font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Engagement</button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="groupPerformanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Response Time Trend -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Response Time Trend</h3>
+                <div class="flex items-center gap-2">
+                    <button class="px-2 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white">Daily</button>
+                    <button class="px-2 py-1 text-xs font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Weekly</button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="responseTimeChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chart.js configuration
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#6B7280';
+    Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB';
+
+    // Message Activity Chart
+    const messageActivityCtx = document.getElementById('messageActivityChart').getContext('2d');
+    new Chart(messageActivityCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Messages',
+                data: [1200, 1900, 1500, 2100, 1800, 2400, 2100],
+                borderColor: '#6366F1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // User Distribution Chart
+    const userDistributionCtx = document.getElementById('userDistributionChart').getContext('2d');
+    new Chart(userDistributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Broadcast', 'User Chat', 'Customer Service'],
+            datasets: [{
+                data: [45, 30, 25],
+                backgroundColor: [
+                    '#6366F1',
+                    '#10B981',
+                    '#F59E0B'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Group Performance Chart
+    const groupPerformanceCtx = document.getElementById('groupPerformanceChart').getContext('2d');
+    new Chart(groupPerformanceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Group 5'],
+            datasets: [{
+                label: 'Messages',
+                data: [1200, 1900, 1500, 2100, 1800],
+                backgroundColor: '#6366F1',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Response Time Chart
+    const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+    new Chart(responseTimeCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Average Response Time (minutes)',
+                data: [3.2, 2.8, 2.5, 2.3, 2.1, 2.4, 2.5],
+                borderColor: '#EF4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Update charts when theme changes
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#6B7280';
+                Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB';
+                // Update all charts
+                Object.values(Chart.instances).forEach(chart => chart.update());
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true
+    });
+</script>
+{% endblock %} 

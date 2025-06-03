@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
+        <div class="flex items-center gap-2">
+            <div class="relative">
+                <input type="text" placeholder="Search users..." 
+                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+            <button class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                <i class="ri-user-add-line mr-2"></i>
+                Add User
+            </button>
+        </div>
+    </div>
+
+    <!-- Users Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- User Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="openChat('john_doe')">
+            <div class="p-6">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                        <i class="ri-user-line text-xl text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">John Doe</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">@john_doe</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Last active: 5m ago</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-xs">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="openChat('jane_smith')">
+            <div class="p-6">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center">
+                        <i class="ri-user-line text-xl text-pink-600 dark:text-pink-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Jane Smith</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">@jane_smith</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Last active: 1h ago</span>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-full text-xs">Offline</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="openChat('mike_johnson')">
+            <div class="p-6">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                        <i class="ri-user-line text-xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Mike Johnson</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">@mike_johnson</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Last active: 2h ago</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-xs">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="openChat('sarah_wilson')">
+            <div class="p-6">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                        <i class="ri-user-line text-xl text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sarah Wilson</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">@sarah_wilson</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Last active: 30m ago</span>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-full text-xs">Offline</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <!-- Chat Header -->
+                <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div id="chatUserAvatar" class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                            <i class="ri-user-line text-xl text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <h3 id="chatUserName" class="text-lg font-semibold text-gray-900 dark:text-white">John Doe</h3>
+                            <p id="chatUserStatus" class="text-sm text-gray-500 dark:text-gray-400">Online</p>
+                        </div>
+                    </div>
+                    <button onclick="closeChat()" class="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Messages -->
+                <div id="chatMessages" class="mt-4 space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Messages will be dynamically added here -->
+                </div>
+
+                <!-- Chat Input -->
+                <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <form id="chatForm" class="flex gap-2" onsubmit="sendMessage(event)">
+                        <input type="text" id="messageInput" placeholder="Type a message..."
+                            class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                            <i class="ri-send-plane-line"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dummy chat data
+    const chatData = {
+        'john_doe': {
+            name: 'John Doe',
+            status: 'Online',
+            avatar: 'indigo',
+            messages: [
+                { sender: 'user', text: 'Hello! How can I help you today?', time: '10:00 AM' },
+                { sender: 'them', text: 'Hi! I have a question about the bot.', time: '10:01 AM' },
+                { sender: 'user', text: 'Sure, what would you like to know?', time: '10:02 AM' }
+            ]
+        },
+        'jane_smith': {
+            name: 'Jane Smith',
+            status: 'Offline',
+            avatar: 'pink',
+            messages: [
+                { sender: 'user', text: 'Hello Jane!', time: '9:30 AM' },
+                { sender: 'them', text: 'Hi there!', time: '9:31 AM' }
+            ]
+        },
+        'mike_johnson': {
+            name: 'Mike Johnson',
+            status: 'Online',
+            avatar: 'blue',
+            messages: [
+                { sender: 'them', text: 'Hey, I need some assistance.', time: '11:00 AM' },
+                { sender: 'user', text: 'Of course! How can I help?', time: '11:01 AM' }
+            ]
+        },
+        'sarah_wilson': {
+            name: 'Sarah Wilson',
+            status: 'Offline',
+            avatar: 'purple',
+            messages: [
+                { sender: 'user', text: 'Hello Sarah!', time: '2:00 PM' },
+                { sender: 'them', text: 'Hi! Thanks for reaching out.', time: '2:01 PM' }
+            ]
+        }
+    };
+
+    let currentChat = null;
+
+    function openChat(userId) {
+        currentChat = userId;
+        const user = chatData[userId];
+        
+        // Update chat header
+        document.getElementById('chatUserName').textContent = user.name;
+        document.getElementById('chatUserStatus').textContent = user.status;
+        document.getElementById('chatUserAvatar').className = `h-10 w-10 rounded-full bg-${user.avatar}-100 dark:bg-${user.avatar}-900 flex items-center justify-center`;
+        document.getElementById('chatUserAvatar').innerHTML = `<i class="ri-user-line text-xl text-${user.avatar}-600 dark:text-${user.avatar}-400"></i>`;
+
+        // Load messages
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.innerHTML = '';
+        user.messages.forEach(message => {
+            const messageElement = createMessageElement(message);
+            messagesContainer.appendChild(messageElement);
+        });
+
+        // Show modal
+        document.getElementById('chatModal').classList.remove('hidden');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function closeChat() {
+        document.getElementById('chatModal').classList.add('hidden');
+        currentChat = null;
+    }
+
+    function createMessageElement(message) {
+        const div = document.createElement('div');
+        div.className = `flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`;
+        
+        div.innerHTML = `
+            <div class="max-w-[70%] ${message.sender === 'user' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'} rounded-lg px-4 py-2">
+                <p class="text-sm">${message.text}</p>
+                <p class="text-xs ${message.sender === 'user' ? 'text-indigo-200' : 'text-gray-500 dark:text-gray-400'} mt-1">${message.time}</p>
+            </div>
+        `;
+        
+        return div;
+    }
+
+    function sendMessage(event) {
+        event.preventDefault();
+        if (!currentChat) return;
+
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Add message to chat data
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        chatData[currentChat].messages.push({
+            sender: 'user',
+            text: message,
+            time: time
+        });
+
+        // Add message to UI
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageElement = createMessageElement({
+            sender: 'user',
+            text: message,
+            time: time
+        });
+        messagesContainer.appendChild(messageElement);
+
+        // Clear input and scroll to bottom
+        input.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Simulate reply after 1 second
+        setTimeout(() => {
+            const reply = {
+                sender: 'them',
+                text: 'Thanks for your message! This is an automated reply.',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            chatData[currentChat].messages.push(reply);
+            const replyElement = createMessageElement(reply);
+            messagesContainer.appendChild(replyElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000);
+    }
+
+    // Close chat when clicking outside
+    document.getElementById('chatModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeChat();
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+        <div class="flex items-center gap-2">
+            <button onclick="saveAllSettings()" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                <i class="ri-save-line mr-2"></i>
+                Save All Changes
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Bot Settings -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                        <i class="ri-robot-line text-xl text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Bot Configuration</h2>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="botSettingsForm" class="space-y-4">
+                    <div>
+                        <label for="botToken" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bot Token</label>
+                        <div class="mt-1 relative">
+                            <input type="password" id="botToken" value="********"
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                            <button type="button" onclick="togglePassword('botToken')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <i class="ri-eye-line text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="botUsername" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bot Username</label>
+                        <input type="text" id="botUsername" value="@mybot"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="webhookUrl" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Webhook URL</label>
+                        <input type="url" id="webhookUrl" value="https://example.com/webhook"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                        <i class="ri-notification-3-line text-xl text-green-600 dark:text-green-400"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Notification Settings</h2>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="notificationSettingsForm" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="emailNotifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via email</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="emailNotifications" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="telegramNotifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">Telegram Notifications</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via Telegram</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="telegramNotifications" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div>
+                        <label for="notificationEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notification Email</label>
+                        <input type="email" id="notificationEmail" value="admin@example.com"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Group Settings -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                        <i class="ri-group-line text-xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Group Settings</h2>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="groupSettingsForm" class="space-y-4">
+                    <div>
+                        <label for="maxGroupSize" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum Group Size</label>
+                        <input type="number" id="maxGroupSize" value="1000"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="autoJoin" class="text-sm font-medium text-gray-700 dark:text-gray-300">Auto-join New Users</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Automatically add new users to groups</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoJoin" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="welcomeMessage" class="text-sm font-medium text-gray-700 dark:text-gray-300">Welcome Message</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Send welcome message to new users</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="welcomeMessage" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div>
+                        <label for="welcomeText" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Welcome Message Text</label>
+                        <textarea id="welcomeText" rows="3"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">Welcome to our group! Please read the rules.</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                        <i class="ri-shield-check-line text-xl text-red-600 dark:text-red-400"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Security Settings</h2>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="securitySettingsForm" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="twoFactorAuth" class="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="twoFactorAuth" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="loginNotifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">Login Notifications</label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified of new logins</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="loginNotifications" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div>
+                        <label for="sessionTimeout" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Session Timeout (minutes)</label>
+                        <input type="number" id="sessionTimeout" value="30"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle password visibility
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+    }
+
+    // Save all settings
+    function saveAllSettings() {
+        // Collect all form data
+        const forms = ['botSettingsForm', 'notificationSettingsForm', 'groupSettingsForm', 'securitySettingsForm'];
+        const formData = {};
+        
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            const formElements = form.elements;
+            for (let element of formElements) {
+                if (element.type === 'checkbox') {
+                    formData[element.id] = element.checked;
+                } else if (element.type !== 'submit' && element.type !== 'button') {
+                    formData[element.id] = element.value;
+                }
+            }
+        });
+
+        // Show success message
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-y-0';
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <i class="ri-check-line mr-2"></i>
+                <span>Settings saved successfully!</span>
+            </div>
+        `;
+        document.body.appendChild(toast);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+            toast.style.transform = 'translateY(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Form submission handlers
+    document.getElementById('botSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAllSettings();
+    });
+
+    document.getElementById('notificationSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAllSettings();
+    });
+
+    document.getElementById('groupSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAllSettings();
+    });
+
+    document.getElementById('securitySettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAllSettings();
+    });
+</script>
+{% endblock %} 

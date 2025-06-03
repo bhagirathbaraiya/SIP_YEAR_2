@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bot Admin Panel{% endblock %}</title>
+    <script>
+        // Immediately set dark mode if needed
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 4rem;
+            background-color: white;
+            z-index: 50;
+            transition: width 0.3s ease;
+        }
+        #sidebar.expanded {
+            width: 16rem;
+        }
+        #mainContent {
+            transition: margin-left 0.3s ease;
+            margin-left: 4rem;
+        }
+        #mainContent.sidebar-expanded {
+            margin-left: 16rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .nav-item:hover {
+            background-color: rgb(224 231 255);
+        }
+        .nav-item.active {
+            background-color: rgb(224 231 255);
+            font-weight: 600;
+        }
+        .nav-item i {
+            min-width: 1.5rem;
+            font-size: 1.25rem;
+        }
+        .nav-item span {
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            margin-left: 0.75rem;
+        }
+        #sidebar.expanded .nav-item span {
+            opacity: 1;
+        }
+        .sidebar-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        #sidebar.expanded .sidebar-close {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.expanded {
+                transform: translateX(0);
+            }
+            #mainContent {
+                margin-left: 0;
+            }
+            #mainContent.sidebar-expanded {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-gray-800 shadow flex items-center justify-between h-16 px-4">
+        <div class="flex items-center gap-2">
+            <button id="sidebarToggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" title="Toggle sidebar">
+                <i id="sidebarToggleIcon" class="ri-menu-fold-line text-xl"></i>
+            </button>
+            <span class="font-bold text-xl text-indigo-600 dark:text-indigo-400">Bot Admin</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleTheme()" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" title="Toggle theme">
+                <i id="sunIcon" class="ri-sun-line text-xl hidden"></i>
+                <i id="moonIcon" class="ri-moon-line text-xl"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="hidden sm:inline">{{ current_user.username if current_user.is_authenticated else 'Guest' }}</span>
+                <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z"/></svg>
+            </div>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="ml-2 text-sm text-gray-600 dark:text-gray-300 hover:underline">Logout</a>
+            {% endif %}
+        </div>
+    </header>
+    <!-- Sidebar & Main -->
+    <div class="flex h-screen pt-16">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white dark:bg-gray-800 shadow-lg">
+            <button onclick="toggleSidebar()" class="sidebar-close p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" title="Collapse sidebar">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+            <div class="pt-16">
+                <nav class="flex flex-col h-full py-6 px-2 space-y-2">
+                    <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                        <i class="ri-dashboard-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('groups_page') }}" class="nav-item {% if request.endpoint == 'groups_page' %}active{% endif %}">
+                        <i class="ri-group-line"></i>
+                        <span>Groups</span>
+                    </a>
+                    <a href="{{ url_for('users') }}" class="nav-item {% if request.endpoint == 'users' %}active{% endif %}">
+                        <i class="ri-user-line"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="nav-item {% if request.endpoint == 'reports' %}active{% endif %}">
+                        <i class="ri-bar-chart-line"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="{{ url_for('logs') }}" class="nav-item {% if request.endpoint == 'logs' %}active{% endif %}">
+                        <i class="ri-file-list-line"></i>
+                        <span>Logs</span>
+                    </a>
+                    <a href="{{ url_for('analytics') }}" class="nav-item {% if request.endpoint == 'analytics' %}active{% endif %}">
+                        <i class="ri-line-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+                        <i class="ri-settings-4-line"></i>
+                        <span>Settings</span>
+                    </a>
+                    <div class="flex-grow"></div>
+                    <div class="text-xs text-gray-400 dark:text-gray-500 px-3">
+                        <div class="flex items-center">
+                            <i class="ri-copyright-line mr-1"></i>
+                            <span>{{ 2025 }}</span>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        <!-- Overlay for sidebar -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-30 hidden"></div>
+        <!-- Main Content -->
+        <main id="mainContent" class="flex-1 min-w-0 p-6">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script>
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('expanded');
+            mainContent.classList.toggle('sidebar-expanded');
+            
+            // Update toggle icon
+            if (sidebar.classList.contains('expanded')) {
+                sidebarToggleIcon.classList.remove('ri-menu-unfold-line');
+                sidebarToggleIcon.classList.add('ri-menu-fold-line');
+                sidebarToggle.title = "Collapse sidebar";
+            } else {
+                sidebarToggleIcon.classList.remove('ri-menu-fold-line');
+                sidebarToggleIcon.classList.add('ri-menu-unfold-line');
+                sidebarToggle.title = "Expand sidebar";
+            }
+
+            // Save state to localStorage
+            localStorage.setItem('sidebarExpanded', sidebar.classList.contains('expanded'));
+        }
+
+        // Load saved sidebar state
+        function loadSidebarState() {
+            const isExpanded = localStorage.getItem('sidebarExpanded') === 'true';
+            
+            if (isExpanded) {
+                sidebar.classList.add('expanded');
+                mainContent.classList.add('sidebar-expanded');
+                sidebarToggleIcon.classList.add('ri-menu-fold-line');
+                sidebarToggleIcon.classList.remove('ri-menu-unfold-line');
+                sidebarToggle.title = "Collapse sidebar";
+            } else {
+                sidebar.classList.remove('expanded');
+                mainContent.classList.remove('sidebar-expanded');
+                sidebarToggleIcon.classList.add('ri-menu-unfold-line');
+                sidebarToggleIcon.classList.remove('ri-menu-fold-line');
+                sidebarToggle.title = "Expand sidebar";
+            }
+        }
+
+        // Initialize sidebar state
+        loadSidebarState();
+
+        // Toggle button
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+        // Set initial icon state
+        if (document.documentElement.classList.contains('dark')) {
+            document.getElementById('sunIcon').classList.remove('hidden');
+            document.getElementById('moonIcon').classList.add('hidden');
+        }
+    </script>
+</body>
+</html> 
