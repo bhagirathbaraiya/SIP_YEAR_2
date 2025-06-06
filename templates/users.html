@@ -85,6 +85,66 @@
     </div>
 </div>
 
+<!-- Add Customer Modal -->
+<div id="addCustomerModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add New Customer</h3>
+                    <button onclick="closeAddCustomerModal()" class="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <form id="addCustomerForm" onsubmit="handleAddCustomer(event)">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="telegramId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telegram ID</label>
+                                <div class="mt-1 flex rounded-md shadow-sm">
+                                    <input type="text" id="telegramId" name="telegramId" required
+                                        class="flex-1 rounded-l-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                        placeholder="Enter Telegram ID">
+                                    <button type="button" onclick="fetchTelegramUser()"
+                                        class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-r-lg hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                        <i class="ri-search-line mr-2"></i>
+                                        Check
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- User Preview (shown after checking Telegram ID) -->
+                            <div id="userPreview" class="hidden">
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                    <div class="flex items-center space-x-4">
+                                        <img id="previewProfilePic" src="" alt="Profile" class="w-16 h-16 rounded-full">
+                                        <div>
+                                            <h4 id="previewName" class="text-lg font-semibold text-gray-900 dark:text-white"></h4>
+                                            <p id="previewUsername" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="closeAddCustomerModal()"
+                                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    Cancel
+                                </button>
+                                <button type="submit" id="addCustomerButton" disabled
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Add Customer
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // Enhanced customer data structure
     const customerData = {
@@ -94,6 +154,7 @@
             status: 'Online',
             lastActive: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
             unreadCount: 2,
+            profilePic: 'https://ui-avatars.com/api/?name=John+Doe&background=random',
             messages: [
                 { sender: 'user', text: 'Hello! How can I help you today?', time: '10:00 AM', read: true },
                 { sender: 'them', text: 'Hi! I have a question about the bot.', time: '10:01 AM', read: false },
@@ -134,6 +195,60 @@
             ]
         }
     };
+
+    // Generate 50 users with dummy data
+    const firstNames = ['John', 'Jane', 'Mike', 'Sarah', 'David', 'Emma', 'James', 'Lisa', 'Robert', 'Anna', 'William', 'Maria', 'Michael', 'Sophia', 'Daniel', 'Olivia', 'Matthew', 'Isabella', 'Christopher', 'Ava', 'Andrew', 'Mia', 'Joseph', 'Charlotte', 'Thomas', 'Amelia', 'Charles', 'Harper', 'Edward', 'Evelyn', 'Henry', 'Abigail', 'Samuel', 'Emily', 'Benjamin', 'Elizabeth', 'Alexander', 'Sofia', 'Nathan', 'Avery', 'Ryan', 'Ella', 'Tyler', 'Scarlett', 'Nicholas', 'Grace', 'Anthony', 'Chloe', 'Jonathan', 'Victoria'];
+    const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'];
+
+    // Generate random messages
+    const messageTemplates = [
+        "Hello! How can I help you today?",
+        "I have a question about your services.",
+        "Can you provide more information?",
+        "Thanks for your assistance!",
+        "I'm interested in learning more.",
+        "What are your business hours?",
+        "Do you offer any discounts?",
+        "I need help with my account.",
+        "Can you explain the pricing?",
+        "I'd like to schedule a meeting."
+    ];
+
+    // Generate 50 users
+    for (let i = 0; i < 50; i++) {
+        const firstName = firstNames[i];
+        const lastName = lastNames[i];
+        const username = `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`;
+        const status = Math.random() > 0.5 ? 'Online' : 'Offline';
+        const lastActive = new Date(Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000));
+        const unreadCount = Math.floor(Math.random() * 5);
+        const profilePic = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=random`;
+
+        // Generate random messages
+        const messages = [];
+        const numMessages = Math.floor(Math.random() * 5) + 2;
+        for (let j = 0; j < numMessages; j++) {
+            const isUser = j % 2 === 0;
+            const messageText = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
+            const time = new Date(Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messages.push({
+                sender: isUser ? 'user' : 'them',
+                text: messageText,
+                time: time,
+                read: Math.random() > 0.3
+            });
+        }
+
+        customerData[username.substring(1)] = {
+            name: `${firstName} ${lastName}`,
+            username: username,
+            status: status,
+            lastActive: lastActive,
+            unreadCount: unreadCount,
+            profilePic: profilePic,
+            messages: messages
+        };
+    }
 
     let currentChat = null;
     let searchTimeout = null;
@@ -196,9 +311,12 @@
         div.innerHTML = `
             <div class="p-6">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${customer.name}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">${customer.username}</p>
+                    <div class="flex items-center gap-3">
+                        <img src="${customer.profilePic}" alt="${customer.name}" class="w-12 h-12 rounded-full">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${customer.name}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">${customer.username}</p>
+                        </div>
                     </div>
                     ${customer.unreadCount > 0 ? `
                         <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-600 text-white text-xs font-medium">
@@ -293,8 +411,14 @@
         customer.unreadCount = 0;
         
         // Update chat header
-        document.getElementById('chatUserName').textContent = customer.name;
-        document.getElementById('chatUserStatus').textContent = customer.status;
+        const chatHeader = document.querySelector('#chatModal .flex.items-center.gap-3');
+        chatHeader.innerHTML = `
+            <img src="${customer.profilePic}" alt="${customer.name}" class="w-12 h-12 rounded-full">
+            <div>
+                <h3 id="chatUserName" class="text-lg font-semibold text-gray-900 dark:text-white">${customer.name}</h3>
+                <p id="chatUserStatus" class="text-sm text-gray-500 dark:text-gray-400">${customer.status}</p>
+            </div>
+        `;
 
         // Load messages
         const messagesContainer = document.getElementById('chatMessages');
@@ -387,6 +511,91 @@
             closeChat();
         }
     });
+
+    // Add Customer Modal Functions
+    function openAddCustomerModal() {
+        document.getElementById('addCustomerModal').classList.remove('hidden');
+        document.getElementById('userPreview').classList.add('hidden');
+        document.getElementById('addCustomerButton').disabled = true;
+        document.getElementById('addCustomerForm').reset();
+    }
+
+    function closeAddCustomerModal() {
+        document.getElementById('addCustomerModal').classList.add('hidden');
+    }
+
+    async function fetchTelegramUser() {
+        const telegramId = document.getElementById('telegramId').value.trim();
+        if (!telegramId) {
+            alert('Please enter a Telegram ID');
+            return;
+        }
+
+        // Show loading state
+        const checkButton = document.querySelector('button[onclick="fetchTelegramUser()"]');
+        const originalButtonText = checkButton.innerHTML;
+        checkButton.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Checking...';
+        checkButton.disabled = true;
+
+        try {
+            // Simulate API call to Telegram
+            // In a real application, you would make an actual API call to Telegram's API
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+
+            // Simulate successful response
+            const mockUserData = {
+                id: telegramId,
+                first_name: 'John',
+                last_name: 'Doe',
+                username: 'johndoe',
+                photo_url: `https://ui-avatars.com/api/?name=John+Doe&background=random`
+            };
+
+            // Update preview
+            document.getElementById('previewProfilePic').src = mockUserData.photo_url;
+            document.getElementById('previewName').textContent = `${mockUserData.first_name} ${mockUserData.last_name}`;
+            document.getElementById('previewUsername').textContent = `@${mockUserData.username}`;
+            document.getElementById('userPreview').classList.remove('hidden');
+            document.getElementById('addCustomerButton').disabled = false;
+
+        } catch (error) {
+            alert('Failed to fetch Telegram user. Please check the ID and try again.');
+        } finally {
+            // Reset button state
+            checkButton.innerHTML = originalButtonText;
+            checkButton.disabled = false;
+        }
+    }
+
+    function handleAddCustomer(event) {
+        event.preventDefault();
+        const telegramId = document.getElementById('telegramId').value.trim();
+        
+        // In a real application, you would make an API call to your backend to add the customer
+        // For now, we'll just add it to our local customerData object
+        const newCustomer = {
+            name: document.getElementById('previewName').textContent,
+            username: document.getElementById('previewUsername').textContent,
+            status: 'Offline',
+            lastActive: new Date(),
+            unreadCount: 0,
+            profilePic: document.getElementById('previewProfilePic').src,
+            messages: []
+        };
+
+        const username = newCustomer.username.substring(1);
+        customerData[username] = newCustomer;
+
+        // Update the UI
+        renderCustomerCards();
+        closeAddCustomerModal();
+
+        // Show success message
+        alert('Customer added successfully!');
+    }
+
+    // Update the Add Customer button click handler
+    document.querySelector('button:has(i.ri-user-add-line)').onclick = openAddCustomerModal;
 
     // Initialize the page when loaded
     document.addEventListener('DOMContentLoaded', initializePage);

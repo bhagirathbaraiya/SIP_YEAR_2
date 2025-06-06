@@ -124,5 +124,5 @@ def logs():
 if __name__ == '__main__':
     # Get port from environment variable or default to 5000
     port = int(os.environ.get('PORT', 5000))
-    # Bind to 0.0.0.0 to make the server externally visible
-    app.run(host='0.0.0.0', port=port) 
+    # Enable debug mode and auto-reload during development
+    app.run(host='0.0.0.0', port=port, debug=True) 
