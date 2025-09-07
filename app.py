@@ -1,13 +1,12 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 from datetime import datetime, timedelta
+from config import Config
+from firebase_service import firebase_service
 
 app = Flask(__name__)
-# Use environment variable for secret key in production
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24))
-# Disable debug mode in production
-app.config['DEBUG'] = os.environ.get('FLASK_ENV') == 'development'
+app.config.from_object(Config)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -20,10 +19,9 @@ class DummyUser(UserMixin):
         self.is_admin = is_admin
 
 # Dummy users
-dummy_users = {
-    1: DummyUser(1, "admin", True),
-    2: DummyUser(2, "user1"),
-    3: DummyUser(3, "user2")
+users = {
+    'admin': DummyUser('admin', 'admin', True),
+    Config.ADMIN_USERNAME: DummyUser(Config.ADMIN_USERNAME, Config.ADMIN_PASSWORD, True)
 }
 
 # Dummy groups
@@ -53,7 +51,7 @@ groups = [
 
 @login_manager.user_loader
 def load_user(user_id):
-    return dummy_users.get(int(user_id))
+    return users.get(user_id)
 
 # Routes
 @app.route('/')
@@ -73,7 +71,7 @@ def analytics():
 
 @app.route('/users')
 @login_required
-def users():
+def users_page():
     return render_template('users.html')
 
 @app.route('/settings')
@@ -93,13 +91,46 @@ def get_stats():
     }
     return jsonify(stats)
 
+@app.route('/api/bot-data')
+@login_required
+def api_bot_data():
+    """API endpoint to serve bot data for dashboard"""
+    try:
+        # Get data from Firebase service
+        data = firebase_service.get_bot_data()
+        return jsonify(data)
+    except Exception as e:
+        print(f"Error in api_bot_data: {e}")
+        # Return mock data as fallback
+        return jsonify(firebase_service.get_mock_data())
+
+@app.route('/api/users/<user_id>/status', methods=['PUT'])
+@login_required
+def update_user_status(user_id):
+    """API endpoint to update user status"""
+    try:
+        data = request.get_json()
+        new_status = data.get('status')
+        
+        if not new_status:
+            return jsonify({"success": False, "message": "Status is required"}), 400
+        
+        result = firebase_service.update_user_status(user_id, new_status)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Dummy authentication - accept any password
-        user = next((u for u in dummy_users.values() if u.username == username), None)
+        # Dummy authentication - check username and password
+        user = None
+        for u in users.values():
+            if u.username == username and password == Config.ADMIN_PASSWORD:
+                user = u
+                break
         if user:
             login_user(user)
             return redirect(url_for('dashboard'))

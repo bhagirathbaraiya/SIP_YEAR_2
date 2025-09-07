@@ -1,25 +1,36 @@
 {% extends "base.html" %}
 
+{% block title %}Users Management - Bot Admin Panel{% endblock %}
+
 {% block content %}
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Customers</h1>
-        <div class="flex items-center gap-2">
-            <div class="relative">
-                <input type="text" id="searchInput" placeholder="Search customers..." 
-                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
-                <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+<div class="space-y-6 p-2 sm:p-4 md:p-6">
+    <!-- Header Section -->
+    <div class="flex flex-col gap-4 sm:gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+            <i class="ri-user-line text-2xl text-green-600 dark:text-green-400"></i>
+            <h2 class="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-200">Users Management</h2>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div class="relative flex-1 sm:flex-none min-w-[180px] sm:min-w-[200px]">
+                <i class="ri-search-line w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search users..."
+                    class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-200 text-sm sm:text-base"
+                />
             </div>
-            <select id="sortSelect" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
-                <option value="unread">Unread First</option>
-                <option value="recent">Most Recent</option>
-                <option value="name">Name</option>
+            
+            <select
+                id="statusFilter"
+                class="flex-1 sm:flex-none min-w-[140px] sm:min-w-[150px] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-200 text-sm sm:text-base"
+            >
+                <option value="all">All Status</option>
+                <option value="allowed">Allowed</option>
+                <option value="blocked">Blocked</option>
+                <option value="pending">Pending</option>
             </select>
-            <button class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-                <i class="ri-user-add-line mr-2"></i>
-                Add Customer
-            </button>
         </div>
     </div>
 
@@ -214,287 +225,18 @@
         "I'd like to schedule a meeting."
     ];
 
-    // Generate 50 users
-    for (let i = 0; i < 50; i++) {
-        const firstName = firstNames[i];
-        const lastName = lastNames[i];
-        const username = `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`;
-        const status = Math.random() > 0.5 ? 'Online' : 'Offline';
-        const lastActive = new Date(Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000));
-        const unreadCount = Math.floor(Math.random() * 5);
-        const profilePic = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=random`;
-
-        // Generate random messages
-        const messages = [];
-        const numMessages = Math.floor(Math.random() * 5) + 2;
-        for (let j = 0; j < numMessages; j++) {
-            const isUser = j % 2 === 0;
-            const messageText = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
-            const time = new Date(Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            messages.push({
-                sender: isUser ? 'user' : 'them',
-                text: messageText,
-                time: time,
-                read: Math.random() > 0.3
-            });
-        }
-
-        customerData[username.substring(1)] = {
-            name: `${firstName} ${lastName}`,
-            username: username,
-            status: status,
-            lastActive: lastActive,
-            unreadCount: unreadCount,
-            profilePic: profilePic,
-            messages: messages
-        };
-    }
+    // Bot users data and state
+    let users = [];
+    let filteredUsers = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let sortField = 'id';
+    let sortDirection = 'asc';
+    let selectedUser = null;
+    let isLoading = true;
 
     let currentChat = null;
     let searchTimeout = null;
-
-    // Initialize the page
-    function initializePage() {
-        renderCustomerCards();
-        setupEventListeners();
-        startStatusUpdates();
-    }
-
-    // Render customer cards
-    function renderCustomerCards(customers = Object.values(customerData)) {
-        const customersGrid = document.getElementById('customersGrid');
-        customersGrid.innerHTML = '';
-
-        if (customers.length === 0) {
-            document.getElementById('emptyState').classList.remove('hidden');
-            document.getElementById('customersGrid').classList.add('hidden');
-            return;
-        }
-
-        document.getElementById('emptyState').classList.add('hidden');
-        document.getElementById('customersGrid').classList.remove('hidden');
-
-        // Sort customers based on selected option
-        const sortSelect = document.getElementById('sortSelect');
-        const sortOption = sortSelect.value;
-        
-        customers.sort((a, b) => {
-            switch (sortOption) {
-                case 'unread':
-                    return b.unreadCount - a.unreadCount;
-                case 'recent':
-                    return b.lastActive - a.lastActive;
-                case 'name':
-                    return a.name.localeCompare(b.name);
-                default:
-                    return 0;
-            }
-        });
-
-        customers.forEach(customer => {
-            const card = createCustomerCard(customer);
-            customersGrid.appendChild(card);
-        });
-    }
-
-    // Create customer card element
-    function createCustomerCard(customer) {
-        const div = document.createElement('div');
-        div.className = 'bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-shadow cursor-pointer transform hover:-translate-y-1 transition-transform';
-        div.onclick = (e) => {
-            // Don't open chat if clicking on the menu
-            if (!e.target.closest('.customer-menu')) {
-                openChat(customer.username.substring(1));
-            }
-        };
-
-        const lastActive = getTimeAgo(customer.lastActive);
-        const statusClass = customer.status === 'Online' 
-            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-
-        div.innerHTML = `
-            <div class="p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <img src="${customer.profilePic}" alt="${customer.name}" class="w-12 h-12 rounded-full">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${customer.name}</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">${customer.username}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        ${customer.unreadCount > 0 ? `
-                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-600 text-white text-xs font-medium">
-                                ${customer.unreadCount}
-                            </span>
-                        ` : ''}
-                        <div class="relative customer-menu">
-                            <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full" onclick="event.stopPropagation()">
-                                <i class="ri-more-2-fill text-gray-500 dark:text-gray-400"></i>
-                            </button>
-                            <div class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
-                                <button onclick="handleUserAction('${customer.username.substring(1)}', 'block')" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="ri-user-unfollow-line mr-2"></i>Block
-                                </button>
-                                <div class="relative group">
-                                    <button onclick="event.stopPropagation()" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                        <i class="ri-time-line mr-2"></i>Restrict
-                                        <i class="ri-arrow-right-s-line float-right"></i>
-                                    </button>
-                                    <div class="hidden group-hover:block absolute left-full top-0 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1">
-                                        <button onclick="handleUserAction('${customer.username.substring(1)}', 'restrict', '1h')" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            1 Hour
-                                        </button>
-                                        <button onclick="handleUserAction('${customer.username.substring(1)}', 'restrict', '2h')" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            2 Hours
-                                        </button>
-                                        <button onclick="handleUserAction('${customer.username.substring(1)}', 'restrict', 'custom')" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            Custom
-                                        </button>
-                                    </div>
-                                </div>
-                                <button onclick="handleUserAction('${customer.username.substring(1)}', 'mute')" class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="ri-volume-mute-line mr-2"></i>Mute
-                                </button>
-                                <button onclick="handleUserAction('${customer.username.substring(1)}', 'delete')" class="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="ri-delete-bin-line mr-2"></i>Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 flex items-center justify-between text-sm">
-                    <span class="text-gray-500 dark:text-gray-400">Last active: ${lastActive}</span>
-                    <span class="px-2 py-1 ${statusClass} rounded-full text-xs">${customer.status}</span>
-                </div>
-            </div>
-        `;
-
-        // Add click handler for the menu button
-        const menuButton = div.querySelector('.customer-menu button');
-        const menuDropdown = div.querySelector('.customer-menu .hidden');
-        
-        menuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Close all other open menus first
-            document.querySelectorAll('.customer-menu .hidden').forEach(menu => {
-                if (menu !== menuDropdown) {
-                    menu.classList.add('hidden');
-                }
-            });
-            menuDropdown.classList.toggle('hidden');
-        });
-
-        return div;
-    }
-
-    // Setup event listeners
-    function setupEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', handleSearch);
-
-        const sortSelect = document.getElementById('sortSelect');
-        sortSelect.addEventListener('change', () => renderCustomerCards());
-    }
-
-    // Handle search input
-    function handleSearch(event) {
-        const searchTerm = event.target.value.toLowerCase();
-        
-        // Only show loading state if there are no customers currently visible
-        const customersGrid = document.getElementById('customersGrid');
-        const hasVisibleCustomers = customersGrid.children.length > 0;
-        
-        if (!hasVisibleCustomers) {
-            document.getElementById('loadingState').classList.remove('hidden');
-            customersGrid.classList.add('hidden');
-        }
-
-        // Clear previous timeout
-        if (searchTimeout) {
-            clearTimeout(searchTimeout);
-        }
-
-        // Add debounce to search
-        searchTimeout = setTimeout(() => {
-            const filteredCustomers = Object.values(customerData).filter(customer => 
-                customer.name.toLowerCase().includes(searchTerm) ||
-                customer.username.toLowerCase().includes(searchTerm)
-            );
-
-            renderCustomerCards(filteredCustomers);
-            document.getElementById('loadingState').classList.add('hidden');
-        }, 300);
-    }
-
-    // Get time ago string
-    function getTimeAgo(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + 'y ago';
-        
-        interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + 'mo ago';
-        
-        interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + 'd ago';
-        
-        interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + 'h ago';
-        
-        interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + 'm ago';
-        
-        return Math.floor(seconds) + 's ago';
-    }
-
-    // Start periodic status updates
-    function startStatusUpdates() {
-        setInterval(() => {
-            renderCustomerCards();
-        }, 30000); // Update every 30 seconds
-    }
-
-    function openChat(customerId) {
-        currentChat = customerId;
-        const customer = customerData[customerId];
-        
-        // Mark all messages as read
-        customer.messages.forEach(message => message.read = true);
-        customer.unreadCount = 0;
-        
-        // Update chat header
-        const chatHeader = document.querySelector('#chatModal .flex.items-center.gap-3');
-        chatHeader.innerHTML = `
-            <img src="${customer.profilePic}" alt="${customer.name}" class="w-12 h-12 rounded-full">
-            <div>
-                <h3 id="chatUserName" class="text-lg font-semibold text-gray-900 dark:text-white">${customer.name}</h3>
-                <p id="chatUserStatus" class="text-sm text-gray-500 dark:text-gray-400">${customer.status}</p>
-            </div>
-        `;
-
-        // Load messages
-        const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.innerHTML = '';
-        customer.messages.forEach(message => {
-            const messageElement = createMessageElement(message);
-            messagesContainer.appendChild(messageElement);
-        });
-
-        // Show modal
-        document.getElementById('chatModal').classList.remove('hidden');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        // Update the customer card to reflect read status
-        renderCustomerCards();
-    }
-
-    function closeChat() {
-        document.getElementById('chatModal').classList.add('hidden');
-        currentChat = null;
-    }
 
     function createMessageElement(message) {
         const div = document.createElement('div');
